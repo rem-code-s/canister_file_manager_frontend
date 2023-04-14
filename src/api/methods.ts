@@ -1,12 +1,12 @@
 import { AuthClient } from "@dfinity/auth-client";
-import { createActor } from "src/declarations/file_hosting";
-import { NestedAssets, _SERVICE } from "src/declarations/file_hosting/file_hosting.did";
+import { createActor } from "src/declarations/file_manager";
+import { NestedAssets, Permission, _SERVICE } from "src/declarations/file_manager/file_manager.did";
 
-// const canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai";
-// const host = "http://localhost:8080";
+let canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai";
+let host = "http://localhost:8080";
 
-const canisterId = "3gjaf-uyaaa-aaaal-qbxdq-cai";
-const host = "https://ic0.app";
+canisterId = "3gjaf-uyaaa-aaaal-qbxdq-cai";
+host = "https://ic0.app";
 
 export default abstract class Methods {
   static async actor(): Promise<_SERVICE> {
@@ -45,9 +45,21 @@ export default abstract class Methods {
     return await this.unwrapResult(result);
   }
 
-  static async deleteDirectory(parentId: bigint) {
+  static async deleteDirectory(directoryId: bigint) {
     const actor = await this.actor();
-    const result = await actor.delete_directory(parentId);
+    const result = await actor.delete_directory(directoryId);
+    return await this.unwrapResult(result);
+  }
+
+  static async changeFilePermission(fileId: bigint, permission: Permission) {
+    const actor = await this.actor();
+    const result = await actor.change_file_permission(fileId, permission);
+    return await this.unwrapResult(result);
+  }
+
+  static async changeDirectory(directoryId: bigint, permission: Permission) {
+    const actor = await this.actor();
+    const result = await actor.change_directory_permission(directoryId, permission);
     return await this.unwrapResult(result);
   }
 

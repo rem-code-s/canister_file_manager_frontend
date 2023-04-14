@@ -14,7 +14,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Methods from "src/api/methods";
 import { useGlobal } from "src/context/GlobalContext";
-import { FileResponse } from "src/declarations/file_hosting/file_hosting.did";
+import { FileResponse } from "src/declarations/file_manager/file_manager.did";
 import { dateFromNano } from "src/helpers/dateHelper";
 
 interface IProps {
@@ -71,7 +71,7 @@ export default function FileDetails({ file, onClose }: IProps) {
       file?.mime_type.startsWith("application/json");
 
     if (isImage) {
-      return <img width={"100%"} src={file.path} alt={file.name} />;
+      return <img width={"100%"} src={window.location.href + file.path} alt={file.name} />;
     } else if (isVideo) {
       return <video width={"100%"} src={file.path} controls />;
     } else if (isAudio) {
@@ -101,10 +101,7 @@ export default function FileDetails({ file, onClose }: IProps) {
         <Box sx={{ display: "flex", flexGrow: 1, justifyContent: "center" }}>{renderContent(file)}</Box>
         <List>
           <ListItem>
-            <ListItemText
-              primary={`${totalFilesMb} (${file.chunks.length} ${file.chunks.length === 1 ? "chunk" : "chunks"})`}
-              secondary={"File size"}
-            />
+            <ListItemText primary={totalFilesMb} secondary={"File size"} />
           </ListItem>
           <ListItem>
             <ListItemText

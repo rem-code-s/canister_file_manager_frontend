@@ -12,7 +12,7 @@ import {
   Stack,
 } from "@mui/material";
 import { truncate } from "src/helpers/stringHelper";
-import { Asset, DirectoryResponse, FileResponse } from "src/declarations/file_hosting/file_hosting.did";
+import { Asset, DirectoryResponse, FileResponse } from "src/declarations/file_manager/file_manager.did";
 import { handleFileInputFromEvent } from "src/helpers/fileHelper";
 import Methods from "src/api/methods";
 import Loading from "../Loading/Loading";
@@ -21,6 +21,7 @@ import DirectoryDetails from "../DirectoryDetails/DirectoryDetails";
 import CreateDirectory from "../CreateDirectory/CreateDirectory";
 import { useGlobal } from "src/context/GlobalContext";
 import { IFileData, useFile } from "src/context/FileContext";
+import { Principal } from "@dfinity/principal";
 
 interface IMenu {
   anchorEl: HTMLElement | null;
@@ -86,6 +87,22 @@ export default function ListView() {
       setIsLoading(true);
       let files = handleFileInputFromEvent(event);
       setColumnMenu((prevState) => ({ ...prevState, anchorEl: null }));
+
+      // some soft safety measures for demo purposes
+      if (files.totalBytes > 1_000_000 && principal && Principal.fromText(principal).isAnonymous()) {
+        alert("For demo purposes: Upload limit is set to 1MB for anonymous principals");
+        setIsLoading(false);
+        return;
+      }
+
+      if (
+        files.totalBytes > 10_000_000 &&
+        principal !== "7yuse-zqp5h-hflmp-jz45y-byp3f-tqlzk-rx3ur-lfyw4-zu6bx-tbilt-rqe"
+      ) {
+        alert("Upload limit is set to 10MB");
+        setIsLoading(false);
+        return;
+      }
 
       const emptyFileResponse = await Methods.addAssets(columnMenu.id, files.assets);
 

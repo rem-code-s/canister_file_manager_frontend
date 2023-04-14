@@ -6,7 +6,7 @@
 
 ##
 
-# File manager canister frontend
+# Canister file manager frontend
 
 This is a CRA app that is created to demo the possibilities of the [backend](https://github.com/rem-code-s/canister_file_manager_backend) canister.
 

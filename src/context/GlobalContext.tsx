@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, createContext, useContext, useEffect } from "react";
-import { Asset, Metadata } from "../declarations/file_hosting/file_hosting.did";
+import { Asset, Metadata } from "../declarations/file_manager/file_manager.did";
 import Methods from "src/api/methods";
 
 interface IGlobalContext {

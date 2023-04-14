@@ -1,5 +1,5 @@
 import { IChunk, IFileData } from "src/context/FileContext";
-import { NestedAssets, PostAsset } from "src/declarations/file_hosting/file_hosting.did";
+import { NestedAssets, PostAsset } from "src/declarations/file_manager/file_manager.did";
 
 export interface FileWithPath {
   file: File;
@@ -8,6 +8,7 @@ export interface FileWithPath {
 export interface InputDataResult {
   assets: NestedAssets[];
   files: File[];
+  totalBytes: number;
 }
 
 // TODO: Clean up this function
@@ -15,10 +16,11 @@ export function handleFileInputFromEvent(event: React.ChangeEvent<HTMLInputEleme
   const target_files = event.target.files;
   if (target_files) {
     const files = Object.values(target_files);
+    const totalBytes = files.reduce((acc, file) => acc + file.size, 0);
     const mappedFiles = mapfilesToAssets(files);
 
     if (mappedFiles.every((f) => f.file.webkitRelativePath === "")) {
-      let data: InputDataResult = { assets: [], files: [] };
+      let data: InputDataResult = { assets: [], files: [], totalBytes: 0 };
       mappedFiles.forEach((f) => {
         const asset: NestedAssets = {
           asset: {
@@ -28,6 +30,7 @@ export function handleFileInputFromEvent(event: React.ChangeEvent<HTMLInputEleme
         };
         data.assets.push(asset);
         data.files.push(f.file);
+        data.totalBytes = totalBytes;
       });
       return data;
     } else {
@@ -90,10 +93,10 @@ export function handleFileInputFromEvent(event: React.ChangeEvent<HTMLInputEleme
         });
       });
 
-      return { assets, files: filesWithPath };
+      return { assets, files: filesWithPath, totalBytes };
     }
   }
-  return { assets: [], files: [] };
+  return { assets: [], files: [], totalBytes: 0 };
 }
 
 export async function getFileChunks(data: IFileData): Promise<IChunk[]> {

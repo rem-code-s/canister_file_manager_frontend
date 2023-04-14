@@ -1,4 +1,4 @@
-import { Cancel, Folder, Lock } from "@mui/icons-material";
+import { Cancel, Folder } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -14,7 +14,7 @@ import {
 import React from "react";
 import Methods from "src/api/methods";
 import { useGlobal } from "src/context/GlobalContext";
-import { DirectoryResponse } from "src/declarations/file_hosting/file_hosting.did";
+import { DirectoryResponse } from "src/declarations/file_manager/file_manager.did";
 
 interface IProps {
   directory: DirectoryResponse | null;

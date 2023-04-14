@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, createContext, useContext, useEffect } from "react";
 import Methods from "src/api/methods";
-import { FileResponse } from "src/declarations/file_hosting/file_hosting.did";
+import { FileResponse } from "src/declarations/file_manager/file_manager.did";
 import { getFileChunks } from "src/helpers/fileHelper";
 
 export interface IFileData {

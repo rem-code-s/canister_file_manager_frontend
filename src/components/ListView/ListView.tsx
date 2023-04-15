@@ -1,5 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Add, ChevronRight, CreateNewFolder, Folder, Info, InsertDriveFile, Lock } from "@mui/icons-material";
+import {
+  Add,
+  AudioFile,
+  ChevronRight,
+  CreateNewFolder,
+  Description,
+  Folder,
+  Info,
+  InsertDriveFile,
+  Lock,
+  VideoFile,
+} from "@mui/icons-material";
 import {
   IconButton,
   List,
@@ -160,6 +171,24 @@ export default function ListView() {
     );
   }
 
+  function getIconForFileType(file: FileResponse) {
+    const isImage = file.mime_type.startsWith("image/");
+    const isVideo = file.mime_type.startsWith("video/");
+    const isAudio = file.mime_type.startsWith("audio/");
+    const isText =
+      file.mime_type.startsWith("text/") ||
+      file?.mime_type.startsWith("text/") ||
+      file?.mime_type.startsWith("application/json");
+
+    if (isImage) return <img alt={file.name} width={24} src={window.location.href + file.path} />;
+    if (isVideo) return <VideoFile color="secondary" />;
+    if (isAudio) return <AudioFile color="secondary" />;
+    if (isText) return <Description color="secondary" />;
+    else {
+      return <InsertDriveFile color="secondary" />;
+    }
+  }
+
   function renderAssets(rowData: IRow, row: number) {
     return rowData.assets.map((asset) => {
       if ("Directory" in asset) {
@@ -174,13 +203,13 @@ export default function ListView() {
         const owned = principal === asset.Directory.owner.toString();
         return (
           <ListItemButton
-            sx={isSelected ? { bgcolor: "secondary.dark" } : { opacity: owned ? 1 : 0.4 }}
+            sx={isSelected ? { bgcolor: "secondary.dark" } : { opacity: owned ? 1 : 0.6 }}
             onClick={(e) => handleDirectoryClick(row, asset.Directory)}
             divider
             key={"dir" + asset.Directory.id}
           >
             <ListItemIcon>
-              <Folder sx={!isSelected ? { color: (theme) => theme.palette.primary.main } : { color: "white" }} />
+              <Folder sx={!isSelected ? { color: (theme) => theme.palette.secondary.main } : { color: "white" }} />
             </ListItemIcon>
             <ListItemText primary={asset.Directory.name} />
             <ListItemSecondaryAction sx={{ justifyContent: "center", display: "flex", alignItems: "center" }}>
@@ -218,19 +247,13 @@ export default function ListView() {
       const owned = principal === asset.File.owner.toString();
       return (
         <ListItemButton
-          sx={{ opacity: owned ? 1 : 0.4 }}
+          sx={{ opacity: owned ? 1 : 0.6 }}
           disabled={asset.File.chunks.some((c) => processingChunks.some((p) => p === c))}
           divider
           key={"file" + asset.File.id}
           onClick={() => setSelectedFile(asset.File)}
         >
-          <ListItemIcon>
-            {["gif", "jpg", "jpeg", "png", "svg", "webp", "ico"].includes(asset.File.extension) ? (
-              <img alt={asset.File.name} width={24} src={window.location.href + asset.File.path} />
-            ) : (
-              <InsertDriveFile color="primary" />
-            )}
-          </ListItemIcon>
+          <ListItemIcon>{getIconForFileType(asset.File)}</ListItemIcon>
           <ListItemText
             primary={truncate(asset.File.name.split("." + asset.File.extension)[0], 10) + "." + asset.File.extension}
           />

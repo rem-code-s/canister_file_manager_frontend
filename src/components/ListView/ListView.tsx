@@ -179,8 +179,7 @@ export default function ListView() {
       file.mime_type.startsWith("text/") ||
       file?.mime_type.startsWith("text/") ||
       file?.mime_type.startsWith("application/json");
-
-    if (isImage) return <img alt={file.name} width={24} src={window.location.href + file.path} />;
+    if (isImage) return <img alt={file.name} width={24} src={window.location.origin + "/" + file.path} />;
     if (isVideo) return <VideoFile color="secondary" />;
     if (isAudio) return <AudioFile color="secondary" />;
     if (isText) return <Description color="secondary" />;

@@ -71,11 +71,11 @@ export default function FileDetails({ file, onClose }: IProps) {
       file?.mime_type.startsWith("application/json");
 
     if (isImage) {
-      return <img width={"100%"} src={window.location.href + file.path} alt={file.name} />;
+      return <img width={"100%"} src={window.location.origin + "/" + file.path} alt={file.name} />;
     } else if (isVideo) {
-      return <video width={"100%"} src={file.path} controls />;
+      return <video width={"100%"} src={window.location.origin + "/" + file.path} controls />;
     } else if (isAudio) {
-      return <audio src={file.path} controls />;
+      return <audio src={window.location.origin + "/" + file.path} controls />;
     } else if (isText) {
       return (
         <Box width={"100%"} height={200} overflow={"scroll"}>

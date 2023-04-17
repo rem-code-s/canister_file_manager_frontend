@@ -187,7 +187,21 @@ export default function ListView() {
   }
 
   function renderAssets(rowData: IRow, row: number) {
-    return rowData.assets.map((asset) => {
+    const sortedAssets = rowData.assets.sort((a, b) => {
+      if ("Directory" in a && "Directory" in b) {
+        return a.Directory.name.localeCompare(b.Directory.name);
+      } else if ("Directory" in a && "File" in b) {
+        return -1;
+      } else if ("File" in a && "Directory" in b) {
+        return 1;
+      } else if ("File" in a && "File" in b) {
+        return a.File.name.localeCompare(b.File.name);
+      } else {
+        return 0;
+      }
+    });
+
+    return sortedAssets.map((asset) => {
       if ("Directory" in asset) {
         const isProcessing = asset.Directory.children.some((p) => {
           if ("File" in p) {

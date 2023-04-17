@@ -1,6 +1,5 @@
 import { Visibility } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
-import { useState } from "react";
 import { useGlobal } from "src/context/GlobalContext";
 
 const trillion = 1_000_000_000_000;

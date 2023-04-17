@@ -107,10 +107,11 @@ export default function FileDetails({ file, onClose }: IProps) {
   }
 
   function renderTitle(file: FileResponse) {
+    const isOwner = file?.owner.toString() === principal;
     return (
       <DialogTitle sx={{ display: "flex", mx: -1, flexGrow: 1, flexDirection: "row", alignItems: "center" }}>
         {getIconForFileType(file)}
-        {titleEditMode ? (
+        {titleEditMode && isOwner ? (
           <TextField
             disabled={isChangingName}
             size="small"
@@ -136,9 +137,11 @@ export default function FileDetails({ file, onClose }: IProps) {
           )
         ) : (
           <Box>
-            <IconButton sx={{ ml: 2 }} size="small">
-              <Edit onClick={() => setTitleEditMode((prevState) => !prevState)} />
-            </IconButton>
+            {isOwner && (
+              <IconButton sx={{ ml: 2 }} size="small">
+                <Edit onClick={() => setTitleEditMode((prevState) => !prevState)} />
+              </IconButton>
+            )}
           </Box>
         )}
       </DialogTitle>

@@ -70,10 +70,11 @@ export default function DirectoryDetails({ directory, onClose }: IProps) {
   }
 
   function renderTitle() {
+    const isOwner = directory?.owner.toString() === principal;
     return (
       <DialogTitle sx={{ display: "flex", mx: -1, flexGrow: 1, flexDirection: "row", alignItems: "center" }}>
         <Folder sx={{ mr: 1 }} color="secondary" />
-        {titleEditMode ? (
+        {titleEditMode && isOwner ? (
           <TextField disabled={isChangingName} size="small" value={title} onChange={(e) => setTitle(e.target.value)} />
         ) : (
           <>{title.length > 20 ? truncate(title, 20) : title}</>
@@ -93,9 +94,11 @@ export default function DirectoryDetails({ directory, onClose }: IProps) {
           )
         ) : (
           <Box>
-            <IconButton sx={{ ml: 2 }} size="small">
-              <Edit onClick={() => setTitleEditMode((prevState) => !prevState)} />
-            </IconButton>
+            {isOwner && (
+              <IconButton sx={{ ml: 2 }} size="small">
+                <Edit onClick={() => setTitleEditMode((prevState) => !prevState)} />
+              </IconButton>
+            )}
           </Box>
         )}
       </DialogTitle>

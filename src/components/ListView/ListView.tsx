@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Add,
   AudioFile,
-  ChevronRight,
   CreateNewFolder,
   Description,
   Folder,
@@ -12,6 +11,7 @@ import {
   VideoFile,
 } from "@mui/icons-material";
 import {
+  Chip,
   IconButton,
   List,
   ListItemButton,
@@ -175,10 +175,8 @@ export default function ListView() {
     const isImage = file.mime_type.startsWith("image/");
     const isVideo = file.mime_type.startsWith("video/");
     const isAudio = file.mime_type.startsWith("audio/");
-    const isText =
-      file.mime_type.startsWith("text/") ||
-      file?.mime_type.startsWith("text/") ||
-      file?.mime_type.startsWith("application/json");
+    const isText = file.mime_type.startsWith("text/") || file?.mime_type.startsWith("application/json");
+
     if (isImage) return <img alt={file.name} width={24} src={window.location.origin + "/" + file.path} />;
     if (isVideo) return <VideoFile color="secondary" />;
     if (isAudio) return <AudioFile color="secondary" />;
@@ -227,16 +225,11 @@ export default function ListView() {
                   >
                     <Info />
                   </IconButton>
-                  <IconButton
-                    size="small"
-                    sx={
-                      isSelected
-                        ? { background: "#ffffff", color: (theme) => theme.palette.primary.main }
-                        : { color: "#ffffff" }
-                    }
-                  >
-                    <ChevronRight />
-                  </IconButton>
+                  <Chip
+                    label={asset.Directory.children.length}
+                    variant={isSelected ? "filled" : "outlined"}
+                    color={isSelected ? "primary" : "secondary"}
+                  />
                 </>
               )}
             </ListItemSecondaryAction>

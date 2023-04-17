@@ -49,7 +49,6 @@ export function handleFileInputFromEvent(event: React.ChangeEvent<HTMLInputEleme
           });
         }
       });
-      console.log(uniqueDirs);
 
       // move folder to corresponding parent folder using NestedArray
       const assets: NestedAssets[] = [];

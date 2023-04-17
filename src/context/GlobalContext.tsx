@@ -7,6 +7,8 @@ interface IGlobalContext {
   setIsLoading: (isLoading: boolean) => void;
   assets: Asset[];
   getAssets: (parentId: [] | [bigint]) => Promise<void>;
+  ownerOnlyAssets: boolean;
+  setOwnerOnlyAssets: (ownerOnlyAssets: boolean) => void;
   metadata: Metadata | null;
   principal: string | null;
   setPrincipal: (principal: string | null) => void;
@@ -20,6 +22,8 @@ export const GlobalContextValue = createContext<IGlobalContext>({
   metadata: null,
   principal: null,
   setPrincipal: () => {},
+  ownerOnlyAssets: false,
+  setOwnerOnlyAssets: () => {},
 });
 
 export default function GlobalContextProvider({ children }: PropsWithChildren<{}>) {
@@ -31,11 +35,20 @@ export default function GlobalContextProvider({ children }: PropsWithChildren<{}
     metadata: null,
     principal: null,
     setPrincipal,
+    ownerOnlyAssets: false,
+    setOwnerOnlyAssets,
   });
 
   useEffect(() => {
-    getAssets();
-  }, []);
+    async function fetchData() {
+      setIsLoading(true);
+      await getAssets();
+      setIsLoading(false);
+    }
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.ownerOnlyAssets]);
 
   function setIsLoading(isLoading: boolean) {
     setState((prevState) => ({ ...prevState, isLoading }));
@@ -45,10 +58,14 @@ export default function GlobalContextProvider({ children }: PropsWithChildren<{}
     setState((prevState) => ({ ...prevState, principal }));
   }
 
+  function setOwnerOnlyAssets(ownerOnlyAssets: boolean) {
+    setState((prevState) => ({ ...prevState, ownerOnlyAssets }));
+  }
+
   async function getAssets(parentId: [] | [bigint] = []) {
     try {
       setState((prevState) => ({ ...prevState }));
-      let assets = await Methods.getAssetTree(parentId);
+      let assets = await Methods.getAssetTree(parentId, state.ownerOnlyAssets);
       let metadata = await Methods.getMetadata();
       setState((prevState) => {
         return { ...prevState, assets, metadata };

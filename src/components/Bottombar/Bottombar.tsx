@@ -1,11 +1,13 @@
-import { Box, Typography } from "@mui/material";
+import { Visibility } from "@mui/icons-material";
+import { Box, IconButton, Typography } from "@mui/material";
+import { useState } from "react";
 import { useGlobal } from "src/context/GlobalContext";
 
 const trillion = 1_000_000_000_000;
 const megabyte = 1_000_000;
 
 export default function Bottombar() {
-  const { metadata } = useGlobal();
+  const { metadata, ownerOnlyAssets, setOwnerOnlyAssets } = useGlobal();
 
   function readableCycles() {
     if (metadata?.cycles) {
@@ -26,7 +28,6 @@ export default function Bottombar() {
   return (
     <Box
       sx={{
-        px: 2,
         alignItems: "center",
         justifyContent: "end",
         display: "flex",
@@ -39,6 +40,17 @@ export default function Bottombar() {
         {readableCycles()} | {readableBytes()} | {Number(metadata?.file_count)} files |{" "}
         {Number(metadata?.directory_count)} directories
       </Typography>
+      <IconButton
+        sx={{ ml: 0.5, height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}
+        size="small"
+        onClick={() => setOwnerOnlyAssets(!ownerOnlyAssets)}
+      >
+        <Visibility fontSize="small" />
+        <Typography sx={{ ml: 0.2, lineHeight: 0 }} variant="caption">
+          {ownerOnlyAssets ? "[owned]" : "[all]"}
+        </Typography>
+      </IconButton>
+      {/* {renderMenu()} */}
     </Box>
   );
 }

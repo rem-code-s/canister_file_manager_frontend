@@ -1,6 +1,6 @@
 import { AuthClient } from "@dfinity/auth-client";
 import { createActor } from "src/declarations/file_manager";
-import { NestedAssets, Permission, _SERVICE } from "src/declarations/file_manager/file_manager.did";
+import { AssetWithId, NestedAssets, Permission, _SERVICE } from "src/declarations/file_manager/file_manager.did";
 
 let canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai";
 let host = "http://localhost:8080";
@@ -28,14 +28,14 @@ export default abstract class Methods {
     return await actor.add_chunks(data);
   }
 
-  static async getAssetTree(parentId: [] | [bigint]) {
+  static async getAssetTree(parentId: [] | [bigint], ownerOnly: boolean) {
     const actor = await this.actor();
-    return await actor.get_assets_tree(parentId);
+    return await actor.get_assets_tree(parentId, ownerOnly);
   }
 
-  static async deleteFile(parentId: bigint) {
+  static async deleteAsset(asset: AssetWithId) {
     const actor = await this.actor();
-    const result = await actor.delete_file(parentId);
+    const result = await actor.delete_asset(asset);
     return await this.unwrapResult(result);
   }
 
@@ -45,21 +45,15 @@ export default abstract class Methods {
     return await this.unwrapResult(result);
   }
 
-  static async deleteDirectory(directoryId: bigint) {
+  static async changeAssetName(name: string, asset: AssetWithId) {
     const actor = await this.actor();
-    const result = await actor.delete_directory(directoryId);
+    const result = await actor.change_asset_name(name, asset);
     return await this.unwrapResult(result);
   }
 
-  static async changeFilePermission(fileId: bigint, permission: Permission) {
+  static async changeAssetPermission(permission: Permission, asset: AssetWithId) {
     const actor = await this.actor();
-    const result = await actor.change_file_permission(fileId, permission);
-    return await this.unwrapResult(result);
-  }
-
-  static async changeDirectory(directoryId: bigint, permission: Permission) {
-    const actor = await this.actor();
-    const result = await actor.change_directory_permission(directoryId, permission);
+    const result = await actor.change_asset_permission(permission, asset);
     return await this.unwrapResult(result);
   }
 

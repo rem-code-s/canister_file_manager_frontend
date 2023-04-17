@@ -13,10 +13,6 @@ export default function Topbar() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    console.log(processingChunks.length);
-  }, [processingChunks]);
-
-  useEffect(() => {
     verififyConnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -30,7 +26,6 @@ export default function Topbar() {
       } else {
         setIsConnected(true);
       }
-      console.log(identity.getPrincipal().toString());
       setPrincipal(authClient.getIdentity().getPrincipal().toString());
     } catch (error) {
       console.log(error);
@@ -67,8 +62,7 @@ export default function Topbar() {
   return (
     <Box
       sx={{
-        pl: 2,
-        pr: 1,
+        px: 2,
         alignItems: "center",
         justifyContent: "space-between",
         display: "flex",

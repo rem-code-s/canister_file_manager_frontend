@@ -1,7 +1,8 @@
-import { Cancel } from "@mui/icons-material";
+import { AudioFile, Cancel, Description, Edit, InsertDriveFile, Photo, Save, VideoFile } from "@mui/icons-material";
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -10,12 +11,14 @@ import {
   List,
   ListItem,
   ListItemText,
+  TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Methods from "src/api/methods";
 import { useGlobal } from "src/context/GlobalContext";
 import { FileResponse } from "src/declarations/file_manager/file_manager.did";
 import { dateFromNano } from "src/helpers/dateHelper";
+import { truncate } from "src/helpers/stringHelper";
 
 interface IProps {
   file: FileResponse | null;
@@ -25,8 +28,14 @@ interface IProps {
 export default function FileDetails({ file, onClose }: IProps) {
   const { setIsLoading, getAssets, principal } = useGlobal();
   const [text, setText] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [titleEditMode, setTitleEditMode] = useState(false);
+  const [isChangingName, setIsChangingName] = useState(false);
 
   useEffect(() => {
+    if (file) {
+      setTitle(file.name.split(`.${file.extension}`)[0]);
+    }
     if (file?.mime_type.startsWith("text/") || file?.mime_type.startsWith("application/json")) {
       fetchText();
     }
@@ -41,13 +50,28 @@ export default function FileDetails({ file, onClose }: IProps) {
     try {
       setIsLoading(true);
       onClose();
-      await Methods.deleteFile(fileId);
+      await Methods.deleteAsset({ File: fileId });
       await getAssets([]);
     } catch (error) {
       alert(error);
       console.log(error);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleNameChange() {
+    try {
+      setIsChangingName(true);
+      if (file) {
+        await Methods.changeAssetName(title + `.${file.extension}`, { File: file.id });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsChangingName(false);
+      setTitleEditMode(false);
+      getAssets([]);
     }
   }
 
@@ -61,22 +85,89 @@ export default function FileDetails({ file, onClose }: IProps) {
     }
   }
 
+  function handleClose() {
+    onClose();
+    setText("");
+    setTitleEditMode(false);
+  }
+
+  function getIconForFileType(file: FileResponse) {
+    const isImage = file.mime_type.startsWith("image/");
+    const isVideo = file.mime_type.startsWith("video/");
+    const isAudio = file.mime_type.startsWith("audio/");
+    const isText = file.mime_type.startsWith("text/") || file?.mime_type.startsWith("application/json");
+
+    if (isImage) return <Photo sx={{ mr: 1 }} color="secondary" />;
+    if (isVideo) return <VideoFile sx={{ mr: 1 }} color="secondary" />;
+    if (isAudio) return <AudioFile sx={{ mr: 1 }} color="secondary" />;
+    if (isText) return <Description sx={{ mr: 1 }} color="secondary" />;
+    else {
+      return <InsertDriveFile sx={{ mr: 1 }} color="secondary" />;
+    }
+  }
+
+  function renderTitle(file: FileResponse) {
+    return (
+      <DialogTitle sx={{ display: "flex", mx: -1, flexGrow: 1, flexDirection: "row", alignItems: "center" }}>
+        {getIconForFileType(file)}
+        {titleEditMode ? (
+          <TextField
+            disabled={isChangingName}
+            size="small"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            InputProps={{ endAdornment: `.${file.extension}` }}
+          />
+        ) : (
+          <>{title.length > 20 ? truncate(title, 20) + " " + file.extension : file.name}</>
+        )}
+        {titleEditMode ? (
+          isChangingName ? (
+            <CircularProgress sx={{ ml: 2 }} size={24} />
+          ) : (
+            <Box sx={{ ml: 2 }}>
+              <IconButton size="small" onClick={handleNameChange} disabled={isChangingName}>
+                <Save />
+              </IconButton>
+              <IconButton size="small" onClick={() => setTitleEditMode(false)} disabled={isChangingName}>
+                <Cancel />
+              </IconButton>
+            </Box>
+          )
+        ) : (
+          <Box>
+            <IconButton sx={{ ml: 2 }} size="small">
+              <Edit onClick={() => setTitleEditMode((prevState) => !prevState)} />
+            </IconButton>
+          </Box>
+        )}
+      </DialogTitle>
+    );
+  }
+
   function renderContent(file: FileResponse) {
     const isImage = file.mime_type.startsWith("image/");
     const isVideo = file.mime_type.startsWith("video/");
     const isAudio = file.mime_type.startsWith("audio/");
-    const isText =
-      file.mime_type.startsWith("text/") ||
-      file?.mime_type.startsWith("text/") ||
-      file?.mime_type.startsWith("application/json");
+    const isText = file.mime_type.startsWith("text/") || file?.mime_type.startsWith("application/json");
 
+    const path = window.location.origin + "/" + file.path;
     if (isImage) {
-      return <img width={"100%"} src={window.location.origin + "/" + file.path} alt={file.name} />;
+      return <img width={"100%"} src={path} alt={file.name} />;
     } else if (isVideo) {
-      return <video width={"100%"} src={window.location.origin + "/" + file.path} controls />;
+      return <video width={"100%"} src={path} controls />;
     } else if (isAudio) {
-      return <audio src={window.location.origin + "/" + file.path} controls />;
+      return <audio src={path} controls />;
     } else if (isText) {
+      if (file.mime_type.startsWith("text/html")) {
+        return (
+          <iframe
+            title={file.name}
+            style={{ border: "none", width: "100%", height: 200, overflow: "scroll" }}
+            src={path}
+          />
+        );
+      }
       return (
         <Box width={"100%"} height={200} overflow={"scroll"}>
           <code>{text}</code>
@@ -87,13 +178,16 @@ export default function FileDetails({ file, onClose }: IProps) {
     }
   }
 
-  const totalFilesMb = (Number(file.size) / 1_000_000).toFixed(2) + " MB";
+  const totalFilesMb = (Number(file.size) / 1_000_000).toFixed(2);
+  const totalFilesKb = (Number(file.size) / 1_000).toFixed(2);
+  const fileSize = totalFilesMb === "0.00" ? totalFilesKb + " KB" : totalFilesMb + " MB";
+
   const canDelete = !file.is_protected && file.owner.toString() === principal;
   return (
-    <Dialog fullWidth onClose={onClose} open={!!file}>
-      <Box sx={{ display: "flex", flexDirection: "row" }}>
-        <DialogTitle sx={{ flexGrow: 1 }}>{file.name}</DialogTitle>
-        <IconButton onClick={onClose}>
+    <Dialog fullWidth onClose={handleClose} open={!!file}>
+      <Box sx={{ display: "flex", flexDirection: "row", px: 1 }}>
+        {renderTitle(file)}
+        <IconButton onClick={handleClose}>
           <Cancel />
         </IconButton>
       </Box>
@@ -101,7 +195,7 @@ export default function FileDetails({ file, onClose }: IProps) {
         <Box sx={{ display: "flex", flexGrow: 1, justifyContent: "center" }}>{renderContent(file)}</Box>
         <List>
           <ListItem>
-            <ListItemText primary={totalFilesMb} secondary={"File size"} />
+            <ListItemText primary={fileSize} secondary={"File size"} />
           </ListItem>
           <ListItem>
             <ListItemText

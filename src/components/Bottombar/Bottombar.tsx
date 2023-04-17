@@ -35,20 +35,22 @@ export default function Bottombar() {
         background: (theme) => theme.palette.primary.light,
       }}
     >
+      <Box sx={{ display: "flex", flexGrow: 1 }}>
+        <IconButton
+          sx={{ height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}
+          size="small"
+          onClick={() => setOwnerOnlyAssets(!ownerOnlyAssets)}
+        >
+          <Visibility fontSize="small" />
+          <Typography sx={{ ml: 0.2, lineHeight: 0 }} variant="caption">
+            {ownerOnlyAssets ? "[owned]" : "[all]"}
+          </Typography>
+        </IconButton>
+      </Box>
       <Typography variant="caption">
         {readableCycles()} | {readableBytes()} | {Number(metadata?.file_count)} files |{" "}
         {Number(metadata?.directory_count)} directories
       </Typography>
-      <IconButton
-        sx={{ ml: 2, height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}
-        size="small"
-        onClick={() => setOwnerOnlyAssets(!ownerOnlyAssets)}
-      >
-        <Visibility fontSize="small" />
-        <Typography sx={{ ml: 0.2, lineHeight: 0 }} variant="caption">
-          {ownerOnlyAssets ? "[owned]" : "[all]"}
-        </Typography>
-      </IconButton>
     </Box>
   );
 }

@@ -221,7 +221,7 @@ export default function FileDetails({ file, onClose }: IProps) {
         >
           {!canDelete ? <>Delete</> : "Delete"}
         </Button>
-        <Button variant="outlined" component="a" href={file.path} target="_blank">
+        <Button variant="outlined" component="a" href={window.location.origin + "/" + file.path} target="_blank">
           Open in new tab
         </Button>
       </DialogActions>

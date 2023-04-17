@@ -69,6 +69,27 @@ export default function DirectoryDetails({ directory, onClose }: IProps) {
     }
   }
 
+  function getFileDetails(directory: DirectoryResponse): { totalBytes: number; totalFiles: number } {
+    let totalBytes = 0;
+    let totalFiles = 0;
+    for (const child of directory.children) {
+      if ("Directory" in child) {
+        const newData = getFileDetails(child.Directory);
+        totalBytes += newData.totalBytes;
+        totalFiles += newData.totalFiles;
+      } else {
+        totalBytes += Number(child.File.size);
+        totalFiles += 1;
+      }
+    }
+    return { totalBytes, totalFiles };
+  }
+
+  function handleClose() {
+    onClose();
+    setTitleEditMode(false);
+  }
+
   function renderTitle() {
     const isOwner = directory?.owner.toString() === principal;
     return (
@@ -95,8 +116,8 @@ export default function DirectoryDetails({ directory, onClose }: IProps) {
         ) : (
           <Box>
             {isOwner && (
-              <IconButton sx={{ ml: 2 }} size="small">
-                <Edit onClick={() => setTitleEditMode((prevState) => !prevState)} />
+              <IconButton sx={{ ml: 2 }} size="small" onClick={() => setTitleEditMode((prevState) => !prevState)}>
+                <Edit />
               </IconButton>
             )}
           </Box>
@@ -106,21 +127,25 @@ export default function DirectoryDetails({ directory, onClose }: IProps) {
   }
 
   const directoryCount = directory.children.filter((child) => "Directory" in child).length;
-  const files = directory.children.filter((child) => "File" in child);
-  const totalFilesBytes = files.reduce((acc, file) => acc + ("File" in file ? Number(file.File.size) : 0), 0);
-  const totalFilesMb = (totalFilesBytes / 1_000_000).toFixed(2) + " MB";
+  const { totalBytes, totalFiles } = getFileDetails(directory);
+  const totalFilesMb = (totalBytes / 1_000_000).toFixed(2) + " MB";
   const canDelete = !directory.is_protected && directory.owner.toString() === principal;
 
   return (
-    <Dialog fullWidth onClose={onClose} open={!!directory}>
-      <Box sx={{ display: "flex", flexDirection: "row" }}>{renderTitle()}</Box>
+    <Dialog fullWidth onClose={handleClose} open={!!directory}>
+      <Box sx={{ display: "flex", flexDirection: "row", px: 1 }}>
+        {renderTitle()}{" "}
+        <IconButton onClick={handleClose}>
+          <Cancel />
+        </IconButton>
+      </Box>
       <DialogContent sx={{ padding: 2, display: "flex", justifyContent: "center" }}>
         <List>
           <ListItem>
             <ListItemText primary={directoryCount} secondary="Directory count" />
           </ListItem>
           <ListItem>
-            <ListItemText primary={`${files.length} (${totalFilesMb})`} secondary="File count" />
+            <ListItemText primary={`${totalFiles} (${totalFilesMb})`} secondary="File count" />
           </ListItem>
           <ListItem>
             <ListItemText primary={directory.owner.toString()} secondary={"Owner"} />

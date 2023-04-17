@@ -41,7 +41,7 @@ export default function Bottombar() {
         {Number(metadata?.directory_count)} directories
       </Typography>
       <IconButton
-        sx={{ ml: 0.5, height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}
+        sx={{ ml: 2, height: 24, display: "flex", justifyContent: "center", alignItems: "center" }}
         size="small"
         onClick={() => setOwnerOnlyAssets(!ownerOnlyAssets)}
       >
@@ -50,7 +50,6 @@ export default function Bottombar() {
           {ownerOnlyAssets ? "[owned]" : "[all]"}
         </Typography>
       </IconButton>
-      {/* {renderMenu()} */}
     </Box>
   );
 }

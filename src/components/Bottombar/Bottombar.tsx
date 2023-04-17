@@ -47,7 +47,7 @@ export default function Bottombar() {
           </Typography>
         </IconButton>
       </Box>
-      <Typography variant="caption">
+      <Typography variant="caption" sx={{ mr: 1 }}>
         {readableCycles()} | {readableBytes()} | {Number(metadata?.file_count)} files |{" "}
         {Number(metadata?.directory_count)} directories
       </Typography>

@@ -128,7 +128,10 @@ export default function DirectoryDetails({ directory, onClose }: IProps) {
 
   const directoryCount = directory.children.filter((child) => "Directory" in child).length;
   const { totalBytes, totalFiles } = getFileDetails(directory);
-  const totalFilesMb = (totalBytes / 1_000_000).toFixed(2) + " MB";
+
+  const totalFilesMb = (Number(totalBytes) / 1_000_000).toFixed(2);
+  const totalFilesKb = (Number(totalBytes) / 1_000).toFixed(2);
+  const fileSize = totalFilesMb === "0.00" ? totalFilesKb + " KB" : totalFilesMb + " MB";
   const canDelete = !directory.is_protected && directory.owner.toString() === principal;
 
   return (
@@ -145,7 +148,7 @@ export default function DirectoryDetails({ directory, onClose }: IProps) {
             <ListItemText primary={directoryCount} secondary="Directory count" />
           </ListItem>
           <ListItem>
-            <ListItemText primary={`${totalFiles} (${totalFilesMb})`} secondary="File count" />
+            <ListItemText primary={`${totalFiles} (${fileSize})`} secondary="File count" />
           </ListItem>
           <ListItem>
             <ListItemText primary={directory.owner.toString()} secondary={"Owner"} />

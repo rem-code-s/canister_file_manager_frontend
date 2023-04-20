@@ -1,7 +1,6 @@
-import { Cancel, Edit, Folder, Save } from "@mui/icons-material";
+import { Cancel, Delete, Edit, Folder, Save } from "@mui/icons-material";
 import {
   Box,
-  Button,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -156,9 +155,9 @@ export default function DirectoryDetails({ directory, onClose }: IProps) {
         </List>
       </DialogContent>
       <DialogActions>
-        <Button disabled={!canDelete} variant="contained" color="error" onClick={() => deleteDirectory(directory.id)}>
-          {!canDelete ? <>Delete</> : "Delete"}
-        </Button>
+        <IconButton disabled={!canDelete} color="error" sx={{ mr: 0.5 }} onClick={() => deleteDirectory(directory.id)}>
+          <Delete />
+        </IconButton>
       </DialogActions>
     </Dialog>
   );

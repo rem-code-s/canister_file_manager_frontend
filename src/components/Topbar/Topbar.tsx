@@ -71,10 +71,10 @@ export default function Topbar() {
         background: (theme) => theme.palette.primary.light,
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", pt: 0.5 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "start", pt: 0.5 }}>
         <img height={32} alt="rem.codes" src={logoLarge} />
-        <Typography sx={{ mt: -0.9 }} variant="caption">
-          Canister file manager
+        <Typography sx={{ mt: -0.9, ml: 5.1 }} variant="caption">
+          Certified canister file manager
         </Typography>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>

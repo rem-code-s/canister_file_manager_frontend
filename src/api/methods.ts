@@ -2,11 +2,17 @@ import { AuthClient } from "@dfinity/auth-client";
 import { createActor } from "src/declarations/file_manager";
 import { AssetWithId, NestedAssets, Permission, _SERVICE } from "src/declarations/file_manager/file_manager.did";
 
-let canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai";
 let host = "http://localhost:8080";
-
-canisterId = "3gjaf-uyaaa-aaaal-qbxdq-cai";
 host = "https://ic0.app";
+
+// local
+let canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai";
+
+// live
+// canisterId = "3gjaf-uyaaa-aaaal-qbxdq-cai";
+
+// certified assets
+canisterId = "6bxgf-fiaaa-aaaal-qbx6q-cai";
 
 export default abstract class Methods {
   static async actor(): Promise<_SERVICE> {

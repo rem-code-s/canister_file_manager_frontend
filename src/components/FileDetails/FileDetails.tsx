@@ -1,4 +1,16 @@
-import { AudioFile, Cancel, Description, Edit, InsertDriveFile, Photo, Save, VideoFile } from "@mui/icons-material";
+import {
+  AudioFile,
+  Cancel,
+  Delete,
+  Description,
+  Download,
+  Edit,
+  InsertDriveFile,
+  OpenInNew,
+  Photo,
+  Save,
+  VideoFile,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -188,11 +200,16 @@ export default function FileDetails({ file, onClose }: IProps) {
   const canDelete = !file.is_protected && file.owner.toString() === principal;
   return (
     <Dialog fullWidth onClose={handleClose} open={!!file}>
-      <Box sx={{ display: "flex", flexDirection: "row", px: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "row", px: 1, alignItems: "center" }}>
         {renderTitle(file)}
-        <IconButton onClick={handleClose}>
-          <Cancel />
-        </IconButton>
+        <>
+          <IconButton component="a" href={window.location.origin + "/" + file.path} target="_blank">
+            <OpenInNew />
+          </IconButton>
+          <IconButton onClick={handleClose}>
+            <Cancel />
+          </IconButton>
+        </>
       </Box>
       <DialogContent sx={{ padding: 2, display: "flex", flexDirection: "column" }}>
         <Box sx={{ display: "flex", flexGrow: 1, justifyContent: "center" }}>{renderContent(file)}</Box>
@@ -212,18 +229,14 @@ export default function FileDetails({ file, onClose }: IProps) {
         </List>
       </DialogContent>
       <DialogActions sx={{ display: "flex", justifyContent: "right" }}>
-        <Button
-          disabled={!canDelete}
-          variant="contained"
-          color="error"
-          sx={{ mr: 1 }}
-          onClick={() => deleteFile(file.id)}
-        >
-          {!canDelete ? <>Delete</> : "Delete"}
-        </Button>
-        <Button variant="outlined" component="a" href={window.location.origin + "/" + file.path} target="_blank">
-          Open in new tab
-        </Button>
+        <IconButton disabled={!canDelete} color="error" sx={{ mr: 0.5 }} onClick={() => deleteFile(file.id)}>
+          <Delete />
+        </IconButton>
+        {/* <a href={window.location.origin + "/" + file.path} download={file.name}>
+          <IconButton color="success">
+            <Download />
+          </IconButton>
+        </a> */}
       </DialogActions>
     </Dialog>
   );

@@ -3,7 +3,7 @@ import { createActor } from "src/declarations/file_manager";
 import { AssetWithId, NestedAssets, Permission, _SERVICE } from "src/declarations/file_manager/file_manager.did";
 
 let host = "http://localhost:8080";
-host = "https://ic0.app";
+host = "https://icp0.io";
 
 // local
 let canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai";
@@ -12,7 +12,9 @@ let canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai";
 // canisterId = "3gjaf-uyaaa-aaaal-qbxdq-cai";
 
 // certified assets
-canisterId = "6bxgf-fiaaa-aaaal-qbx6q-cai";
+// canisterId = "6nrm6-2yaaa-aaaag-abklq-cai";
+
+canisterId = "yljmk-oqaaa-aaaal-qb4yq-cai"; // ttr docs
 
 export default abstract class Methods {
   static async actor(): Promise<_SERVICE> {

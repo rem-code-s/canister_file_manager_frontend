@@ -99,21 +99,21 @@ export default function ListView() {
       let files = handleFileInputFromEvent(event);
       setColumnMenu((prevState) => ({ ...prevState, anchorEl: null }));
 
-      // some soft safety measures for demo purposes
-      if (files.totalBytes > 1_000_000 && principal && Principal.fromText(principal).isAnonymous()) {
-        alert("For demo purposes: Upload limit is set to 1MB for anonymous principals");
-        setIsLoading(false);
-        return;
-      }
+      // // some soft safety measures for demo purposes
+      // if (files.totalBytes > 1_000_000 && principal && Principal.fromText(principal).isAnonymous()) {
+      //   alert("For demo purposes: Upload limit is set to 1MB for anonymous principals");
+      //   setIsLoading(false);
+      //   return;
+      // }
 
-      if (
-        files.totalBytes > 10_000_000 &&
-        principal !== "7yuse-zqp5h-hflmp-jz45y-byp3f-tqlzk-rx3ur-lfyw4-zu6bx-tbilt-rqe"
-      ) {
-        alert("Upload limit is set to 10MB");
-        setIsLoading(false);
-        return;
-      }
+      // if (
+      //   files.totalBytes > 10_000_000 &&
+      //   principal !== "7yuse-zqp5h-hflmp-jz45y-byp3f-tqlzk-rx3ur-lfyw4-zu6bx-tbilt-rqe"
+      // ) {
+      //   alert("Upload limit is set to 10MB");
+      //   setIsLoading(false);
+      //   return;
+      // }
 
       const emptyFileResponse = await Methods.addAssets(columnMenu.id, files.assets);
 
